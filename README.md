@@ -1,4 +1,4 @@
-# Python
+# Google Book Search By API (Python App)
 This is python based command line application. Just call python file from command line. Just make sure that you have installed Python 3.7 on your computer. Instructions has been provided inside the program for work flow. 
 
 This application will allow you to:
