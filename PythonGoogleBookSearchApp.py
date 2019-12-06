@@ -1,9 +1,22 @@
 import requests
+import enum
 
+class OperationType(enum.Enum):
+   INITIATE = 0
+   SEARCH_BOOK = 1
+   SAVE_BOOK = 2
+   VIEW_READING_LIST = 3
+   
+class PrintType(enum.Enum):
+   SEARCH_RESULT = 1
+   READING_LIST = 2
+   
 
 class GoogleBooks():
     savedBookArr =[]
     searchedBookArr =[]
+    maxNumberOfList=4
+    minNumberOfList=0
     searchApiUrl = 'https://www.googleapis.com/books/v1/volumes?q={}'     
     def search(self,keyword):
         self.searchedBookArr.clear()
@@ -13,7 +26,7 @@ class GoogleBooks():
            self.restartCommand()
         else:
             size = len(result['items'])
-            for i in range(5 if size >5  else size):
+            for i in range(self.maxNumberOfList+1 if size >self.maxNumberOfList+1  else size):
                 bookInfo = {
                     'number': i,
                     'title' : result['items'][i]['volumeInfo'].get('title', 'Not Available'),
@@ -24,39 +37,39 @@ class GoogleBooks():
         return self.searchedBookArr
 
     def printBooksToScreen(self, type):  
-        if len(self.savedBookArr)==0 and type!=1:
+        if len(self.savedBookArr)==0 and type!=PrintType.SEARCH_RESULT:
                 print("You do not have saved book in your reading list”")
                 return None
         else:
             ## type 1: print searchedBookArr else print savedBookArr
             print("{:<8} {:<70} {:<30} {:<100}".format('NUMBER','AUTHOR','PUBLISHER', 'TITLE'))
-            for item in self.searchedBookArr  if type==1  else self.savedBookArr :
+            for item in self.searchedBookArr  if type==PrintType.SEARCH_RESULT  else self.savedBookArr :
                 print("{:<8} {:<70} {:<30} {:<100}".format(str(item['number']),str(item['author']),str(item['publisher']),str(item['title'])))
         return True
 
     def readCommand(self, commandType): 
         command=None
         #3: View reading list 0: Initiate program
-        if commandType==0 or commandType==3: 
+        if OperationType(commandType)==OperationType.INITIATE or OperationType(commandType)==OperationType.VIEW_READING_LIST: 
             while True:
                 command = input('Enter your command [1:Search Books, 2:Save books to Reading List”, 3:View Reading List”] ? : ')
-                if command.isdigit() and int(command)>0 and  int(command) <4 :
+                if command.isdigit() and int(command)>=self.minNumberOfList and  int(command) <= self.maxNumberOfList :
                     break
         #Search Book
-        elif commandType==1:            
+        elif  OperationType(commandType)==OperationType.SEARCH_BOOK:            
                 command = input('Enter keyword to search book ? : ')
                 return command
         #Save Book
-        elif commandType==2:  
+        elif  OperationType(commandType)==OperationType.SAVE_BOOK:  
             if len(self.searchedBookArr)==0:
                 print("Firstly,You have to search book to save")
                 self.restartCommand()
             else:
                 while True:
                     command = input('Enter the book number in the list to save ? : ')
-                    if command.isdigit() and int(command)>=0 and int(command) < len(self.searchedBookArr) :
+                    if command.isdigit() and int(command)>=self.minNumberOfList and int(command) < len(self.searchedBookArr) :
                         break
-        return command
+        return int(command)
 
     def saveBook(self, number):
         for item in self.searchedBookArr:
@@ -73,7 +86,7 @@ class GoogleBooks():
         print("Press 1 to search books")
         print("Press 2 to save books")
         print("Press 3 to list saved books")
-        command=self.readCommand(0)
+        command=self.readCommand(OperationType.INITIATE)
         return command
 
     def restartCommand(self, command=None):
@@ -84,25 +97,24 @@ class GoogleBooks():
         if command is None:
             command=self.selectCommand()
         #search books
-        if command=="1":
-            keyword= self.readCommand(1)
+        if OperationType(command)==OperationType.SEARCH_BOOK:
+            keyword= self.readCommand(OperationType.SEARCH_BOOK)
             #check input size before search
             keyword = keyword if len(keyword)<100 else keyword[0:99] 
             self.search(keyword)
-            self.printBooksToScreen(1)
+            self.printBooksToScreen(PrintType.SEARCH_RESULT)
             self.restartCommand(command)
         #save books
-        elif command=="2":
-            booknumber= self.readCommand(2)
+        elif OperationType(command)== OperationType.SAVE_BOOK :
+            booknumber= self.readCommand(OperationType.SAVE_BOOK)
             self.saveBook(int(booknumber))
             self.restartCommand(command)
         #list saved books
-        elif command=="3":
+        elif OperationType(command)==OperationType.VIEW_READING_LIST :
             #list to saved books
-            self.printBooksToScreen(2)
+            self.printBooksToScreen(PrintType.READING_LIST)
             self.restartCommand(command)
 
-#Main Program
 if __name__ == '__main__':
     gb=GoogleBooks()
     command=gb.commandHandler()
