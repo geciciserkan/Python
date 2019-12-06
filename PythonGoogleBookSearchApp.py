@@ -2,11 +2,9 @@ import requests
 
 
 class GoogleBooks():
-
     savedBookArr =[]
     searchedBookArr =[]
     searchApiUrl = 'https://www.googleapis.com/books/v1/volumes?q={}'     
-
     def search(self,keyword):
         self.searchedBookArr.clear()
         result= requests.get(self.searchApiUrl.format(keyword)).json()
@@ -23,15 +21,18 @@ class GoogleBooks():
                     'publisher' : result['items'][i]['volumeInfo'].get('publisher', 'Not Available')
                 }           
                 self.searchedBookArr.append(bookInfo)
+        return self.searchedBookArr
 
     def printBooksToScreen(self, type):  
         if len(self.savedBookArr)==0 and type!=1:
                 print("You do not have saved book in your reading list”")
+                return None
         else:
             ## type 1: print searchedBookArr else print savedBookArr
             print("{:<8} {:<70} {:<30} {:<100}".format('NUMBER','AUTHOR','PUBLISHER', 'TITLE'))
             for item in self.searchedBookArr  if type==1  else self.savedBookArr :
                 print("{:<8} {:<70} {:<30} {:<100}".format(str(item['number']),str(item['author']),str(item['publisher']),str(item['title'])))
+        return True
 
     def readCommand(self, commandType): 
         command=None
@@ -57,7 +58,6 @@ class GoogleBooks():
                         break
         return command
 
-
     def saveBook(self, number):
         for item in self.searchedBookArr:
             if item['number']==number:
@@ -67,6 +67,7 @@ class GoogleBooks():
                     self.savedBookArr.append(item)
                     print("Book with number "+str(number) +" has been saved")
                 break
+        return self.savedBookArr
 
     def selectCommand(self):  
         print("Press 1 to search books")
@@ -82,7 +83,6 @@ class GoogleBooks():
     def commandHandler(self, command=None):
         if command is None:
             command=self.selectCommand()
-
         #search books
         if command=="1":
             keyword= self.readCommand(1)
@@ -102,9 +102,10 @@ class GoogleBooks():
             self.printBooksToScreen(2)
             self.restartCommand(command)
 
-
 #Main Program
-gb=GoogleBooks()
-command=gb.commandHandler()
+if __name__ == '__main__':
+    gb=GoogleBooks()
+    command=gb.commandHandler()
+
 
 
