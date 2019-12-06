@@ -97,28 +97,28 @@ class GoogleBooks():
     def commandHandler(self, command=None):
         if command is None:
             command=self.selectCommand()
-        #search books
-        if OperationType(command)==OperationType.SEARCH_BOOK:
-            keyword= self.readCommand(OperationType.SEARCH_BOOK)
-            #check input size before search
-            keyword = keyword if len(keyword)<self.maxCharacterSizeForSearch else keyword[0:self.maxCharacterSizeForSearch-1] 
-            self.search(keyword)
-            self.printBooksToScreen(PrintType.SEARCH_RESULT)
-            self.restartCommand(command)
-        #save books
-        elif OperationType(command)== OperationType.SAVE_BOOK :
-            booknumber= self.readCommand(OperationType.SAVE_BOOK)
-            self.saveBook(int(booknumber))
-            self.restartCommand(command)
-        #list saved books
-        elif OperationType(command)==OperationType.VIEW_READING_LIST :
-            #list to saved books
-            self.printBooksToScreen(PrintType.READING_LIST)
-            self.restartCommand(command)
+        try:
+            #search books
+            if OperationType(command)==OperationType.SEARCH_BOOK:
+                keyword= self.readCommand(OperationType.SEARCH_BOOK)
+                #check input size before search
+                keyword = keyword if len(keyword)<self.maxCharacterSizeForSearch else keyword[0:self.maxCharacterSizeForSearch-1] 
+                self.search(keyword)
+                self.printBooksToScreen(PrintType.SEARCH_RESULT)
+                self.restartCommand(command)
+            #save books
+            elif OperationType(command)== OperationType.SAVE_BOOK :
+                booknumber= self.readCommand(OperationType.SAVE_BOOK)
+                self.saveBook(int(booknumber))
+                self.restartCommand(command)
+            #list saved books
+            elif OperationType(command)==OperationType.VIEW_READING_LIST :
+                #list to saved books
+                self.printBooksToScreen(PrintType.READING_LIST)
+                self.restartCommand(command)
+        except Exception as e:
+            print(e)
+            self.commandHandler()
 
 if __name__ == '__main__':
-    gb=GoogleBooks()
-    gb.commandHandler()
-
-
-
+    GoogleBooks().commandHandler()
