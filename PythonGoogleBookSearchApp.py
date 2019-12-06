@@ -10,7 +10,6 @@ class OperationType(enum.Enum):
 class PrintType(enum.Enum):
    SEARCH_RESULT = 1
    READING_LIST = 2
-   
 
 class GoogleBooks():
     savedBookArr =[]
@@ -18,7 +17,8 @@ class GoogleBooks():
     maxNumberOfList=4
     minNumberOfList=0
     maxCharacterSizeForSearch=100
-    searchApiUrl = 'https://www.googleapis.com/books/v1/volumes?q={}'     
+    searchApiUrl = 'https://www.googleapis.com/books/v1/volumes?q={}'    
+    
     def search(self,keyword):
         self.searchedBookArr.clear()
         result= requests.get(self.searchApiUrl.format(keyword)).json()
@@ -118,7 +118,7 @@ class GoogleBooks():
 
 if __name__ == '__main__':
     gb=GoogleBooks()
-    command=gb.commandHandler()
+    gb.commandHandler()
 
 
 
