@@ -17,6 +17,7 @@ class GoogleBooks():
     searchedBookArr =[]
     maxNumberOfList=4
     minNumberOfList=0
+    maxCharacterSizeForSearch=100
     searchApiUrl = 'https://www.googleapis.com/books/v1/volumes?q={}'     
     def search(self,keyword):
         self.searchedBookArr.clear()
@@ -100,7 +101,7 @@ class GoogleBooks():
         if OperationType(command)==OperationType.SEARCH_BOOK:
             keyword= self.readCommand(OperationType.SEARCH_BOOK)
             #check input size before search
-            keyword = keyword if len(keyword)<100 else keyword[0:99] 
+            keyword = keyword if len(keyword)<self.maxCharacterSizeForSearch else keyword[0:self.maxCharacterSizeForSearch-1] 
             self.search(keyword)
             self.printBooksToScreen(PrintType.SEARCH_RESULT)
             self.restartCommand(command)
