@@ -109,7 +109,7 @@ class GoogleBooks():
             #save books
             elif OperationType(command)== OperationType.SAVE_BOOK :
                 booknumber= self.readCommand(OperationType.SAVE_BOOK)
-                self.saveBook(int(booknumber))
+                self.saveBook(booknumber)
                 self.restartCommand(command)
             #list saved books
             elif OperationType(command)==OperationType.VIEW_READING_LIST :
